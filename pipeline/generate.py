@@ -46,9 +46,11 @@ def generate_variant(claims: list[ClinicalClaim], variant_type: str) -> str:
     })
 
 
-def generate_all_variants(claims: list[ClinicalClaim]) -> list[str]:
+def generate_all_variants(
+    claims: list[ClinicalClaim], return_exceptions: bool = False
+) -> list[str | Exception]:
     inputs = [
         {"claims": [c.model_dump() for c in claims], "variant_type": vt}
         for vt in VARIANT_TYPES
     ]
-    return _get_chain().batch(inputs)
+    return _get_chain().batch(inputs, return_exceptions=return_exceptions)
