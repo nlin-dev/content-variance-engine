@@ -1,8 +1,10 @@
-import importlib
 import os
 
 import pytest
 from dotenv import load_dotenv
+
+from pipeline.extract import extract_claims
+from pipeline.schemas import ExtractionResult
 
 load_dotenv()
 
@@ -67,11 +69,6 @@ REQUIRED_CITATIONS = [
 def test_extract_claims_integration():
     if not os.environ.get("OPENAI_API_KEY"):
         pytest.skip("OPENAI_API_KEY not set")
-
-    extract_mod = importlib.import_module("pipeline.extract")
-    schemas_mod = importlib.import_module("pipeline.schemas")
-    extract_claims = extract_mod.extract_claims
-    ExtractionResult = schemas_mod.ExtractionResult
 
     result = extract_claims(SALT_20_SOURCE_TEXT)
 
