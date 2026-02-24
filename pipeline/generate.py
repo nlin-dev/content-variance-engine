@@ -38,6 +38,8 @@ def _get_chain():
 
 
 def generate_variant(claims: list[ClinicalClaim], variant_type: str) -> str:
+    if variant_type not in VARIANT_TYPES:
+        raise ValueError(f"Unknown variant_type: {variant_type!r}")
     return _get_chain().invoke({
         "claims": [c.model_dump() for c in claims],
         "variant_type": variant_type,
@@ -49,4 +51,4 @@ def generate_all_variants(claims: list[ClinicalClaim]) -> list[str]:
         {"claims": [c.model_dump() for c in claims], "variant_type": vt}
         for vt in VARIANT_TYPES
     ]
-    return _get_chain().batch(inputs, return_exceptions=True)
+    return _get_chain().batch(inputs)

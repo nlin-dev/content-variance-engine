@@ -71,7 +71,5 @@ class VariantResult(BaseModel):
 
     @model_validator(mode="after")
     def derive_overall_passed(self) -> "VariantResult":
-        object.__setattr__(
-            self, "overall_passed", self.programmatic.passed and self.semantic.passed
-        )
+        self.overall_passed = self.programmatic.passed and self.semantic.passed
         return self
