@@ -34,7 +34,7 @@ _extraction_chain = None
 def _get_chain():
     global _extraction_chain
     if _extraction_chain is None:
-        _llm = ChatOpenAI(model="gpt-5")
+        _llm = ChatOpenAI(model="gpt-5-nano")
         _extraction_chain = _prompt | _llm.with_structured_output(ExtractionResult)
     return _extraction_chain
 

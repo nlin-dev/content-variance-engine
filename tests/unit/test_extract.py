@@ -48,7 +48,7 @@ def test_extract_claims_uses_correct_model_config():
     with patch("pipeline.extract.ChatOpenAI", mock_chat_openai):
         pipeline.extract._get_chain()
 
-    mock_chat_openai.assert_called_once_with(model="gpt-5")
+    mock_chat_openai.assert_called_once_with(model="gpt-5-nano")
     pipeline.extract._extraction_chain = None
 
 
