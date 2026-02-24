@@ -28,11 +28,18 @@ _prompt = ChatPromptTemplate.from_messages([
     ("human", "{source_text}"),
 ])
 
-_llm = ChatOpenAI(model="gpt-5", temperature=0)
-_extraction_chain = _prompt | _llm.with_structured_output(ExtractionResult)
+_extraction_chain = None
+
+
+def _get_chain():
+    global _extraction_chain
+    if _extraction_chain is None:
+        _llm = ChatOpenAI(model="gpt-5")
+        _extraction_chain = _prompt | _llm.with_structured_output(ExtractionResult)
+    return _extraction_chain
 
 
 def extract_claims(source_text: str) -> ExtractionResult:
-    return _extraction_chain.invoke({
+    return _get_chain().invoke({
         "source_text": source_text,
     })

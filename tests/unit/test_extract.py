@@ -16,7 +16,7 @@ from pipeline.schemas import ClinicalClaim, ExtractionResult
 # ---------------------------------------------------------------------------
 
 def _reload_extract_with_mock_llm():
-    """Reload pipeline.extract with ChatOpenAI mocked at the source module.
+    """Reload pipeline.extract with ChatOpenAI mocked, then trigger lazy chain init.
 
     Returns (mock_chat_openai, mock_llm, mock_structured, reloaded_module).
     """
@@ -26,9 +26,12 @@ def _reload_extract_with_mock_llm():
 
     mock_chat_openai = MagicMock(return_value=mock_llm)
 
-    with patch("langchain_openai.ChatOpenAI", mock_chat_openai):
-        import pipeline.extract
-        importlib.reload(pipeline.extract)
+    import pipeline.extract
+    importlib.reload(pipeline.extract)
+
+    with patch("pipeline.extract.ChatOpenAI", mock_chat_openai):
+        pipeline.extract._extraction_chain = None  # reset lazy cache
+        pipeline.extract._get_chain()              # trigger construction under mock
         module = pipeline.extract
 
     return mock_chat_openai, mock_llm, mock_structured, module
@@ -69,7 +72,7 @@ def test_extract_claims_passes_source_text_to_chain():
 def test_extract_claims_uses_correct_model_config():
     mock_chat_openai, _mock_llm, _mock_structured, _module = _reload_extract_with_mock_llm()
 
-    mock_chat_openai.assert_called_once_with(model="gpt-5", temperature=0)
+    mock_chat_openai.assert_called_once_with(model="gpt-5")  # temperature unsupported for gpt-5
 
 
 def test_extraction_chain_uses_structured_output():
