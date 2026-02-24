@@ -6,13 +6,7 @@ All LLM calls are mocked — no API key required.
 import importlib
 from unittest.mock import MagicMock, patch
 
-import pytest
-
 from pipeline.generate import VARIANT_TYPES, generate_all_variants, generate_variant
-
-
-def test_variant_types_length():
-    assert len(VARIANT_TYPES) == 5
 
 
 def test_variant_types_values():
@@ -74,3 +68,4 @@ def test_chain_not_instantiated_at_import():
         importlib.reload(pipeline.generate)
 
     mock_chat_openai.assert_not_called()
+    pipeline.generate._generation_chain = None
