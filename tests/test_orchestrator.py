@@ -8,7 +8,6 @@ import pytest
 
 from pipeline.schemas import (
     ClinicalClaim,
-    ComplianceFlag,
     ComplianceReport,
     ExtractionResult,
     VariantResult,
