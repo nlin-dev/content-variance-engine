@@ -34,8 +34,6 @@ def _make_variant_result(variant_type: str, html: str) -> VariantResult:
         variant_type=variant_type,
         html=html,
         programmatic=report,
-        semantic=report,
-        overall_passed=True,
     )
 
 
@@ -100,8 +98,9 @@ def test_run_pipeline_writes_output_files(
     report_file = tmp_path / "compliance_report.json"
     assert report_file.exists()
     report_data = json.loads(report_file.read_text())
-    assert len(report_data) == 5
-    for entry in report_data:
+    assert "compliance_methodology" in report_data
+    assert len(report_data["results"]) == 5
+    for entry in report_data["results"]:
         assert "html" not in entry
 
 
@@ -162,7 +161,7 @@ def test_run_pipeline_handles_batch_exceptions(
     assert not (tmp_path / "variant_4.html").exists()
 
     report_data = json.loads((tmp_path / "compliance_report.json").read_text())
-    assert len(report_data) == 3
+    assert len(report_data["results"]) == 3
 
 
 @patch("pipeline.orchestrator.validate_variant")
@@ -200,9 +199,9 @@ def test_generate_index_html_with_results():
     failed_report = ComplianceReport(passed=False, flags=[])
 
     results_with_index = [
-        (0, VariantResult(variant_type=VARIANT_TYPES[0], html="<html/>", programmatic=passed_report, semantic=passed_report, overall_passed=True)),
-        (1, VariantResult(variant_type=VARIANT_TYPES[1], html="<html/>", programmatic=failed_report, semantic=failed_report, overall_passed=False)),
-        (2, VariantResult(variant_type=VARIANT_TYPES[2], html="<html/>", programmatic=passed_report, semantic=passed_report, overall_passed=True)),
+        (0, VariantResult(variant_type=VARIANT_TYPES[0], html="<html/>", programmatic=passed_report)),
+        (1, VariantResult(variant_type=VARIANT_TYPES[1], html="<html/>", programmatic=failed_report)),
+        (2, VariantResult(variant_type=VARIANT_TYPES[2], html="<html/>", programmatic=passed_report)),
     ]
 
     html = _generate_index_html(results_with_index, failed_indices=[])
@@ -210,10 +209,10 @@ def test_generate_index_html_with_results():
     assert "variant_0.html" in html
     assert "variant_1.html" in html
     assert "variant_2.html" in html
-    assert "PASSED" in html
-    assert "FAILED" in html
-    assert "#22c55e" in html or "green" in html.lower()
-    assert "#ef4444" in html or "red" in html.lower()
+    assert "Passed" in html or "PASSED" in html
+    assert "Failed" in html or "FAILED" in html
+    assert "badge-passed" in html or "#22c55e" in html
+    assert "badge-failed" in html or "#ef4444" in html
 
 
 def test_generate_index_html_with_failures():
@@ -224,14 +223,34 @@ def test_generate_index_html_with_failures():
     passed_report = ComplianceReport(passed=True, flags=[])
 
     results_with_index = [
-        (0, VariantResult(variant_type=VARIANT_TYPES[0], html="<html/>", programmatic=passed_report, semantic=passed_report, overall_passed=True)),
-        (2, VariantResult(variant_type=VARIANT_TYPES[2], html="<html/>", programmatic=passed_report, semantic=passed_report, overall_passed=True)),
-        (4, VariantResult(variant_type=VARIANT_TYPES[4], html="<html/>", programmatic=passed_report, semantic=passed_report, overall_passed=True)),
+        (0, VariantResult(variant_type=VARIANT_TYPES[0], html="<html/>", programmatic=passed_report)),
+        (2, VariantResult(variant_type=VARIANT_TYPES[2], html="<html/>", programmatic=passed_report)),
+        (4, VariantResult(variant_type=VARIANT_TYPES[4], html="<html/>", programmatic=passed_report)),
     ]
 
     html = _generate_index_html(results_with_index, failed_indices=[1, 3])
 
-    assert "GENERATION FAILED" in html
+    assert "Failed" in html or "FAILED" in html
     assert "variant_1.html" not in html
     assert "variant_3.html" not in html
     assert "variant_0.html" in html
+
+
+def test_compliance_report_includes_methodology(tmp_path):
+    """compliance_report.json includes compliance_methodology explaining guardrail approach."""
+    from pipeline.orchestrator import run_pipeline
+
+    extraction = _make_extraction(20)
+    html_variants = ["<html>v</html>"] * 5
+    from pipeline.generate import VARIANT_TYPES
+    variant_results = [_make_variant_result(vt, html) for vt, html in zip(VARIANT_TYPES, html_variants)]
+
+    with patch("pipeline.orchestrator.extract_claims", return_value=extraction), \
+         patch("pipeline.orchestrator.generate_all_variants", return_value=html_variants), \
+         patch("pipeline.orchestrator.validate_variant", side_effect=variant_results):
+        run_pipeline(page_content="test", output_dir=tmp_path)
+
+    report = json.loads((tmp_path / "compliance_report.json").read_text())
+    methodology = report["compliance_methodology"]
+    assert "verified" in methodology["programmatic_checks"].lower()
+    assert "template" in methodology["semantic_risk_mitigation"].lower()
