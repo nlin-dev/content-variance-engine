@@ -1,0 +1,40 @@
+ALLEGRO Phase IIb/III Clinical Trial Results: Ritlecitinib for Alopecia Areata
+
+Study Population: Patients aged ≥12 years with >50% scalp hair loss. AA includes AT (alopecia totalis) and AU (alopecia universalis) subgroups.
+
+SALT ≤20 Response Rates by Treatment Arm and Subgroup:
+
+Ritlecitinib 50 mg QD (n=130):
+- Non-AT/Non-AU: 36.2% at Week 24, 52.9% at Week 48
+- AT: 7.4% at Week 24, 22.2% at Week 48
+- AU: 9.1% at Week 24, 40.9% at Week 48
+
+Ritlecitinib 30 mg QD (n=132):
+- Non-AT/Non-AU: 20.6% at Week 24, 45.3% at Week 48
+- AT: 7.7% at Week 24, 19.2% at Week 48
+- AU: 8.0% at Week 24, 11.5% at Week 48
+
+Ritlecitinib 200/50 mg QD (n=132):
+- Non-AT/Non-AU: 44.8% at Week 24, 54.3% at Week 48
+- AT: 20.8% at Week 24, 20.0% at Week 48
+- AU: 4.2% at Week 24, 20.0% at Week 48
+
+Ritlecitinib 200/30 mg QD (n=130):
+- Non-AT/Non-AU: 31.3% at Week 24, 41.8% at Week 48
+- AT: 9.7% at Week 24, 26.7% at Week 48
+- AU: 9.5% at Week 24, 20.0% at Week 48
+
+Primary Endpoint (from pivotal trial):
+SALT ≤20 at Week 24:
+- 50 mg QD: 23%
+- 30 mg QD: 14%
+- 200/50 mg QD: 31%
+- 200/30 mg QD: 22%
+
+Study: ALLEGRO Phase IIb/III clinical trial
+
+Citations:
+1. Zhang X, et al. Poster #P0486 and Abstract #1511. Presented at the 31st Congress of the European Academy of Dermatology and Venereology (EADV). 7–10 September 2022; Milan, Italy.
+2. King B, et al. Lancet. 2023 [In Press, doi: 10.1016/S0140-6736(23)00222-2].
+
+Qualifiers: Post hoc analysis. Patients aged ≥12 years with >50% scalp hair loss. AA includes AT and AU subgroups.
