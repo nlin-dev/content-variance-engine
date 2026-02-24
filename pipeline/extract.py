@@ -1,8 +1,4 @@
-"""Extraction module — Stage 1 of the content variance pipeline.
-
-Extracts structured clinical claims from source text using LangChain
-structured output with GPT-5.
-"""
+"""Extraction module — Stage 1 of the content variance pipeline."""
 
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_openai import ChatOpenAI
@@ -33,18 +29,10 @@ _prompt = ChatPromptTemplate.from_messages([
 ])
 
 _llm = ChatOpenAI(model="gpt-5", temperature=0)
-extraction_chain = _prompt | _llm.with_structured_output(ExtractionResult)
+_extraction_chain = _prompt | _llm.with_structured_output(ExtractionResult)
 
 
 def extract_claims(source_text: str) -> ExtractionResult:
-    """Extract structured clinical claims from source text.
-
-    Args:
-        source_text: Raw pharmaceutical source text containing clinical claims.
-
-    Returns:
-        ExtractionResult containing all extracted ClinicalClaim objects.
-    """
-    return extraction_chain.invoke({
+    return _extraction_chain.invoke({
         "source_text": source_text,
     })

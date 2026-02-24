@@ -1,12 +1,4 @@
-"""Pydantic schemas for the content variance engine pipeline.
-
-Data contracts between pipeline stages:
-- ClinicalClaim: A single extracted fact from source content
-- ExtractionResult: Collection of claims extracted from source
-- ComplianceFlag: A single compliance issue detected during review
-- ComplianceReport: Summary of compliance check results
-- VariantResult: Final output for a generated variant with compliance reports
-"""
+"""Pydantic schemas for the content variance engine pipeline."""
 
 from typing import Literal
 from pydantic import BaseModel, ConfigDict, Field, model_validator
