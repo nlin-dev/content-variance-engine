@@ -1,12 +1,15 @@
 """Orchestrator — wires extract -> generate -> validate and persists outputs."""
 
 import json
+import logging
 from pathlib import Path
 
 from pipeline.extract import extract_claims
 from pipeline.generate import generate_all_variants, VARIANT_TYPES
 from pipeline.schemas import VariantResult
 from pipeline.validate import validate_variant
+
+logger = logging.getLogger(__name__)
 
 
 def _generate_index_html(
@@ -68,7 +71,6 @@ def run_pipeline(page_content: str, output_dir: Path) -> list[VariantResult]:
 
     raw_variants = generate_all_variants(extraction.claims, return_exceptions=True)
 
-    output_dir = Path(output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
 
     successful: list[tuple[int, VariantResult]] = []
@@ -76,6 +78,7 @@ def run_pipeline(page_content: str, output_dir: Path) -> list[VariantResult]:
 
     for i, (vt, item) in enumerate(zip(VARIANT_TYPES, raw_variants)):
         if isinstance(item, Exception):
+            logger.warning("Variant %d (%s) failed: %s", i, vt, item)
             failed_indices.append(i)
         else:
             result = validate_variant(vt, item, extraction)
