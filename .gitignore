@@ -1,0 +1,10 @@
+# Documentation
+.a/
+
+.env
+outputs/
+__pycache__/
+.pytest_cache/
+*.pyc
+*.egg-info/
+.DS_Store
