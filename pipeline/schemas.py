@@ -1,15 +1,7 @@
-"""Pydantic schemas for the content variance engine pipeline.
-
-Data contracts between pipeline stages:
-- ClinicalClaim: A single extracted fact from source content
-- ExtractionResult: Collection of claims extracted from source
-- ComplianceFlag: A single compliance issue detected during review
-- ComplianceReport: Summary of compliance check results
-- VariantResult: Final output for a generated variant with compliance reports
-"""
+"""Pydantic schemas for the content variance engine pipeline."""
 
 from typing import Literal
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field, computed_field
 
 
 class ClinicalClaim(BaseModel):
@@ -35,13 +27,6 @@ class ComplianceFlag(BaseModel):
     model_config = ConfigDict(frozen=True)
 
     flag_type: Literal[
-        # Semantic flags (human review)
-        "claim_expansion",
-        "superiority_implication",
-        "dropped_qualifier",
-        "tone_shift",
-        "endpoint_misrepresentation",
-        # Programmatic flags (automated checks)
         "number_missing",
         "citation_missing",
         "unexpected_number",
@@ -70,16 +55,8 @@ class VariantResult(BaseModel):
     programmatic: ComplianceReport = Field(
         description="Results from automated compliance checks"
     )
-    semantic: ComplianceReport = Field(
-        description="Results from LLM-based semantic review"
-    )
-    overall_passed: bool = Field(
-        description="Whether the variant passed both programmatic and semantic checks"
-    )
 
-    @model_validator(mode="after")
-    def derive_overall_passed(self) -> "VariantResult":
-        object.__setattr__(
-            self, "overall_passed", self.programmatic.passed and self.semantic.passed
-        )
-        return self
+    @computed_field
+    @property
+    def overall_passed(self) -> bool:
+        return self.programmatic.passed
