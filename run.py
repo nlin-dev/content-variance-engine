@@ -2,6 +2,10 @@ import argparse
 import sys
 from pathlib import Path
 
+from dotenv import load_dotenv
+
+load_dotenv()
+
 from pipeline.ingest import extract_pdf_text
 from pipeline.orchestrator import run_pipeline
 
